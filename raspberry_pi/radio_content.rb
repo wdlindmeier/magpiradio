@@ -1,4 +1,34 @@
+#--
+#
+# This file is one part of:
+#
+# Magpi Radio - A Twitter Radio for Raspberry Pi
+#
+# Copyright (c) 2012  William Lindmeier
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+#++
+
 require File.join(File.dirname(__FILE__), 'radio_globals')
+require File.join(File.dirname(__FILE__), 'api_config')
 require File.join(File.dirname(__FILE__), 'radio_twitter')
 require File.join(File.dirname(__FILE__), 'channels/channel')
 require File.join(File.dirname(__FILE__), 'channels/list_channel')
@@ -37,21 +67,22 @@ module Magpi_Content
 		$channels << StreamChannel.new(Magpi_Twitter::stream_client, "Nearby", "audio/ch_nearby.wav", :locations, coord_range)
 
 		
-		at_channel = StreamChannel.new(Magpi_Twitter::stream_client, "@magpiradio", "audio/ch_at.wav", :track, '@magpiradio')
+		at_channel = StreamChannel.new(Magpi_Twitter::stream_client, "@#{$TWITTER_ACCOUNT_NAME}", "audio/ch_at.wav", :track, "@#{$TWITTER_ACCOUNT_NAME}")
 		# If this is a command, ignore it
 		# NOTE: These are executed in the order we add them, so this has to be first
 		at_channel.tweet_filters << lambda{ |tweet_txt| 
-			if tweet_txt.match(/^\s*\@magpiradio\s*\$/i)
+			if tweet_txt.match(/^\s*\@#{$TWITTER_ACCOUNT_NAME}\s*\$/i)
 				return nil
 			end
 			tweet_txt
 		}
 		at_channel.tweet_filters << lambda{ |tweet_txt| 
-											if tweet_txt.match(/^\@magpi/i)
+											if tweet_txt.match(/^\@#{$TWITTER_ACCOUNT_NAME}/i)
 												# If the tweet starts w/ the handle, just remove it
-												tweet_txt.gsub('@magpiradio', '')
+												tweet_txt.gsub("@#{$TWITTER_ACCOUNT_NAME}", '')
 											else
 												# Otherwise, spell it out
+												# NOTE: Update this for your account as needed
 												tweet_txt.gsub('@magpiradio', "magpie radio") 
 											end
 										  }
@@ -153,10 +184,6 @@ module Magpi_Content
 			return nil
 		end
 
-		# downcase so acronyms are read like words
-		# tweet.downcase!
-		# nah
-
 		# Remove visibility . 
 		tweet.sub!(/^\./, '')
 
@@ -182,12 +209,6 @@ module Magpi_Content
 		# Remove via @...
 		tweet.gsub!(/\s*(\()?via \@\S+(\))?/, '')
 
-		# User specific-stuff
-		case sender
-		when 'TFLN'
-			tweet.gsub!(/\(\d+\)\:/, '')
-		end
-		
 		return tweet.strip
 	end
 

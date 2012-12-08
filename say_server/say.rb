@@ -1,3 +1,5 @@
+#!/usr/bin/ruby
+
 #--
 #
 # This file is one part of:
@@ -27,21 +29,27 @@
 #
 #++
 
-require File.join(File.dirname(__FILE__), 'channel')
-require File.join(File.dirname(__FILE__), '../radio_audio_playback')
+require "cgi"
+require "net/http"
 
-class OffChannel < TwitterRadioChannel
+cgi = CGI.new
+query = cgi.params['q'][0] if cgi.params['q']
+query ||= "Hello World"
+voice = cgi.params['v'][0] if cgi.params['v']
+voice ||= "Alex"
+say_me = URI.decode(query)
 
-	def initialize
-		super(nil,"off",nil)
-	end
+# Some common replacements 
+say_me.gsub!("\\!", '!')
+say_me.gsub!(/\bim\b/i, "I'm")
+say_me.gsub!(/\bid\b/i, "I'd")
+say_me.gsub!(/\bive\b/i, "I've")
+say_me.gsub!(/\bill\b/i, "I'll")
 
+say_dir = '/Library/WebServer/Documents/say'
 
-	def begin_broadcast
-
-		self.is_broadcasting = true
-		Magpi_AudioPlayback::fade_out_music(0)
-
-	end
-
-end
+# NOTE: This may be insecure. Input params should be sanitized. 
+# USE AT YOUR OWN RISK
+`rm -f #{say_dir}/tmp.mp3 && /usr/bin/say -o #{say_dir}/tmp.m4a -v "#{voice}" "#{say_me}" && /Applications/ffmpegX.app/Contents/Resources/ffmpeg -i #{say_dir}/tmp.m4a #{say_dir}/tmp.mp3`
+cgi.out("status" => "302", "Connection" => "close", "Content-Length" => 1, "Location" => '/say/tmp.mp3') {' '}
+exit
