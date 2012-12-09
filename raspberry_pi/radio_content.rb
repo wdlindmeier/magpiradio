@@ -51,6 +51,7 @@ module Magpi_Content
 		$channels << OffChannel.new
 
 		# List channels
+		# Add your own list names here (otherwise you'll get a Twitter exception)
 		$channels << ListChannel.new(Magpi_Twitter::rest_client, "All", "audio/ch_all.wav")
 		$channels << ListChannel.new(Magpi_Twitter::rest_client, "News", "audio/ch_news.wav")
 		$channels << ListChannel.new(Magpi_Twitter::rest_client, "Weird", "audio/ch_weird.wav")
