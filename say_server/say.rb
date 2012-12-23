@@ -46,6 +46,8 @@ say_me.gsub!(/\bid\b/i, "I'd")
 say_me.gsub!(/\bive\b/i, "I've")
 say_me.gsub!(/\bill\b/i, "I'll")
 
+# This is the directory that the audio files will be saved to.
+# You may need to add write permissions with chmod +w
 say_dir = '/Library/WebServer/Documents/say'
 
 # NOTE: This may be insecure. Input params should be sanitized. 

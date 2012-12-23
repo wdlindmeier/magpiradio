@@ -1,7 +1,7 @@
 Magpi Radio
 ===========
 
-A Twitter Radio for Raspberry Pi and Arduino
+A Twitter Radio for Raspberry Pi and Arduino. Featured on Hack-a-day, Adafruit and Make!
 
 A Brief Overview:
 http://itp.nyu.edu/~wdl225/work/?p=275
@@ -19,6 +19,7 @@ Magpi Radio was designed to run on a Raspberry Pi running Debian Wheezy, but it 
 Software requirements:
 
 - SDL library (SMPEG must be installed for mp3 playback): http://www.libsdl.org/ 
+- SDL_mixer library. This is the SDL module that controls audio playback.
 - ruby (tested using ruby 1.9.3)
 - The ruby-sdl-ffi gem: http://github.com/jacius/ruby-sdl-ffi
 - The twitter ruby gem: http://sferik.github.com/twitter/
@@ -27,8 +28,8 @@ Software requirements:
 
 API requirements:
 
-- A Google API Key
-- Twitter API OAuth Credentials
+- A Google API Key. Enable Google Maps Geolocation API in your console. (https://code.google.com/apis/console)
+- Twitter API OAuth Credentials. Read and write permissions should be enabled. 
 
 Configure
 ---------
@@ -54,6 +55,14 @@ $ ./radio
 With a custom text-to-speech server (e.g. using the say.rb script on 10.0.1.4):
 
 $ ./radio.rb "http://10.0.1.4/cgi-bin/say.rb?q=__QUERY__&v=__VOICE__"
+
+When you run the script, you may get these SDL warnings:
+
+Warning: Could not load SDL_image.
+Warning: Could not load SDL_ttf.
+Warning: Could not load SDL_gfx.
+
+These can be ignored, because Magpi Radio doesn't use the graphics and imaging components of SDL.
 
 Twitter Interface
 -----------------
